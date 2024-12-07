@@ -42,8 +42,9 @@ def search_restaurants(location, keyword, radius=1000, max_results=5):
                 '가게 이름': name,
                 '주소': address,
                 '평점': f"{rating} ({reviews_total} 리뷰)",
-                '장점': pros[:2],
-                '단점': cons[:2]
+                '영업 상태': business_status,  # 영업 상태 추가
+                '장점': pros[:2],  # 최대 2개의 장점
+                '단점': cons[:2]   # 최대 2개의 단점
             }
             restaurants.append(restaurant)
 
@@ -59,9 +60,9 @@ def extract_pros_cons(reviews):
 
     for review in reviews:
         text = review.get('text', '')
-        if 'good' in text.lower() or 'great' in text.lower() or 'excellent' in text.lower():
+        if 'good' in text.lower() or 'great' in text.lower() or 'excellent' in text.lower() or 'nice' in text.lower():
             pros.append(text)
-        if 'bad' in text.lower() or 'poor' in text.lower() or 'disappointing' in text.lower():
+        if 'bad' in text.lower() or 'poor' in text.lower() or 'disappointing' in text.lower() or 'terrible' in text.lower():
             cons.append(text)
 
     return pros, cons
@@ -79,4 +80,5 @@ def recommend():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 

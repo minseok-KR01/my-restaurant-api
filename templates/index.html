@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맛집 추천 API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #ff6347;
+            color: #fff;
+            padding: 1rem 0;
+        }
+        h1 {
+            margin: 0;
+        }
+        main {
+            margin: 2rem;
+        }
+        .instructions {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: left;
+            max-width: 600px;
+        }
+        .instructions p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>맛집 추천 API에 오신 것을 환영합니다!</h1>
+    </header>
+
+    <main>
+        <div class="instructions">
+            <h2>API 사용 방법</h2>
+            <p>이 API를 통해 위치와 키워드에 맞는 맛집을 추천받을 수 있습니다.</p>
+            <p><strong>사용 예시:</strong></p>
+            <p><code>/recommend?location=Anam Station, Seoul, South Korea&keyword=kalguksu</code></p>
+            <p>위의 요청을 보내면 다음과 같은 결과를 받을 수 있습니다:</p>
+            <pre>
+[
+    {
+        "가게 이름": "소문난 칼국수",
+        "주소": "서울특별시 성북구 고려대로 89",
+        "평점": "4.3 (150 리뷰)",
+        "장점": ["면발이 쫄깃하고 맛있어요!", "국물이 깔끔해요."],
+        "단점": ["웨이팅이 길어요.", "주차가 어려워요."]
+    }
+]
+            </pre>
+            <p>맛집 추천 시 장단점은 리뷰를 기반으로 추출됩니다.</p>
+            <p><strong>추가로 궁금한 사항이 있으시면 GPT를 통해 질문해 주세요!</strong></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 MyGPT-Restaurant-API. All rights reserved.</p>
+    </footer>
+</body>
+</html>

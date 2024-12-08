@@ -54,15 +54,17 @@ def search_restaurants(location, keyword, radius=1000, max_results=5):
             rating = details['result'].get('rating', 'N/A')
             reviews_total = details['result'].get('user_ratings_total', 0)
 
-            # 리뷰 추출 (장점과 단점)
+            # 리뷰 추출 (장점, 단점, 특성)
             reviews = details['result'].get('reviews', [])
             pros, cons = extract_pros_cons(reviews)
+            features = extract_features(reviews)
 
             restaurant = {
                 '가게 이름': name,
                 '주소': address,
                 '평점': f"{rating} ({reviews_total} 리뷰)",
                 '영업 상태': business_status,
+                '특성': features[:2],
                 '장점': pros[:2],
                 '단점': cons[:2]
             }
@@ -73,15 +75,6 @@ def search_restaurants(location, keyword, radius=1000, max_results=5):
     except googlemaps.exceptions.ApiError as e:
         logging.error(f"Google Maps API error: {e}")
         return {"error": f"Google Maps API error: {e}"}
-    except googlemaps.exceptions.TransportError as e:
-        logging.error(f"Network error: {e}")
-        return {"error": f"Network error: {e}"}
-    except googlemaps.exceptions.Timeout as e:
-        logging.error(f"Request timeout: {e}")
-        return {"error": f"Request timeout: {e}"}
-    except googlemaps.exceptions.InvalidRequest as e:
-        logging.error(f"Invalid request: {e}")
-        return {"error": f"Invalid request: {e}"}
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
         return {"error": str(e)}
@@ -104,6 +97,20 @@ def extract_pros_cons(reviews):
             cons.append(clean_text)
 
     return pros, cons
+
+def extract_features(reviews):
+    """리뷰에서 주요 특성을 추출하는 함수"""
+    features = []
+    feature_keywords = ['noodle', 'soup', 'pancake', 'dumpling', 'broth', 'service', 'taste']
+
+    for review in reviews:
+        text = review.get('text', '')
+        clean_text = html.unescape(text)
+        
+        if any(word in clean_text.lower() for word in feature_keywords):
+            features.append(clean_text)
+
+    return features
 
 @app.route('/recommend', methods=['GET'])
 def recommend():

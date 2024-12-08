@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # CORS 추가
 import googlemaps
 import os
 import html
 import logging
 
 app = Flask(__name__)
+CORS(app)  # CORS 설정 적용
 
 # Google Maps API 키 설정 (환경 변수에서 가져오기)
 API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')

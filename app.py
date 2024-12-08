@@ -7,7 +7,7 @@ import logging
 
 app = Flask(__name__)
 
-# CORS 설정: 특정 Origin만 허용 (예: 프론트엔드 도메인)
+# CORS 설정
 CORS(app)
 
 # 로깅 설정 (DEBUG 레벨로 설정)

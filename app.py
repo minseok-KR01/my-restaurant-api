@@ -6,7 +6,8 @@ import html
 import logging
 
 app = Flask(__name__)
-CORS(app)  # CORS 설정 적용
+CORS(app, resources={r"/recommend/*": {"origins": "https://chat.openai.com"}})
+
 
 @app.route('/test', methods=['GET'])
 def test():

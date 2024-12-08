@@ -8,6 +8,11 @@ import logging
 app = Flask(__name__)
 CORS(app)  # CORS 설정 적용
 
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify({"message": "CORS is enabled!"})
+
+
 # Google Maps API 키 설정 (환경 변수에서 가져오기)
 API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
 if not API_KEY:

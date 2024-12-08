@@ -9,17 +9,26 @@
     <div id="results"></div>
 
     <script>
+        // 특수문자 이스케이프 함수
+        function escapeHTML(text) {
+            return text.replace(/&/g, "&amp;")
+                       .replace(/</g, "&lt;")
+                       .replace(/>/g, "&gt;")
+                       .replace(/"/g, "&quot;")
+                       .replace(/'/g, "&#039;");
+        }
+
         fetch('/recommend?location=Anam Station, Seoul, South Korea&keyword=kalguksu')
             .then(response => response.json())
             .then(data => {
                 let resultDiv = document.getElementById('results');
                 resultDiv.innerHTML = data.map(restaurant => `
-                    <h2>${restaurant['가게 이름']}</h2>
-                    <p><strong>주소:</strong> ${restaurant['주소']}</p>
-                    <p><strong>평점:</strong> ${restaurant['평점']}</p>
-                    <p><strong>영업 상태:</strong> ${restaurant['영업 상태']}</p>
-                    <p><strong>장점:</strong> ${restaurant['장점'].join('<br>')}</p>
-                    <p><strong>단점:</strong> ${restaurant['단점'].join('<br>')}</p>
+                    <h2>${escapeHTML(restaurant['가게 이름'])}</h2>
+                    <p><strong>주소:</strong> ${escapeHTML(restaurant['주소'])}</p>
+                    <p><strong>평점:</strong> ${escapeHTML(restaurant['평점'])}</p>
+                    <p><strong>영업 상태:</strong> ${escapeHTML(restaurant['영업 상태'])}</p>
+                    <p><strong>장점:</strong><br>${restaurant['장점'].map(escapeHTML).join('<br>')}</p>
+                    <p><strong>단점:</strong><br>${restaurant['단점'].map(escapeHTML).join('<br>')}</p>
                     <hr>
                 `).join('');
             })

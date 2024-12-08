@@ -6,13 +6,16 @@ import html
 import logging
 
 app = Flask(__name__)
+
+# CORS 설정: 특정 Origin만 허용 (예: 프론트엔드 도메인)
 CORS(app)
 
+# 로깅 설정 (DEBUG 레벨로 설정)
+logging.basicConfig(level=logging.DEBUG)
 
 @app.route('/test', methods=['GET'])
 def test():
     return jsonify({"message": "CORS is enabled!"})
-
 
 # Google Maps API 키 설정 (환경 변수에서 가져오기)
 API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
@@ -20,9 +23,6 @@ if not API_KEY:
     raise ValueError("GOOGLE_MAPS_API_KEY 환경 변수가 설정되지 않았습니다. .env 파일 또는 시스템 환경 변수에서 API 키를 설정해주세요.")
 
 gmaps = googlemaps.Client(key=API_KEY)
-
-# 로깅 설정
-logging.basicConfig(level=logging.INFO)
 
 def search_restaurants(location, keyword, radius=1000, max_results=5):
     try:
@@ -38,7 +38,7 @@ def search_restaurants(location, keyword, radius=1000, max_results=5):
         radius = min(radius, 5000)
 
         # Google Places API를 사용해 장소 검색
-        logging.info(f"Searching for '{keyword}' near '{location}' with radius {radius} meters")
+        logging.debug(f"Searching for '{keyword}' near '{location}' with radius {radius} meters")
         places_result = gmaps.places(query=keyword, location=lat_lng, radius=radius)
 
         restaurants = []
@@ -82,10 +82,10 @@ def search_restaurants(location, keyword, radius=1000, max_results=5):
 
     except googlemaps.exceptions.ApiError as e:
         logging.error(f"Google Maps API error: {e}")
-        return {"error": f"Google Maps API error: {e}"}
+        return {"error": f"Google Maps API error: {e}", "message": "Google Maps API 호출 중 오류가 발생했습니다. API 키를 확인해 주세요."}
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
-        return {"error": str(e)}
+        return {"error": str(e), "message": "알 수 없는 오류가 발생했습니다. 다시 시도해 주세요."}
 
 def extract_pros_cons(reviews):
     """리뷰에서 장점과 단점을 추출하는 함수"""
@@ -126,7 +126,7 @@ def recommend():
     keyword = request.args.get('keyword')
 
     if not location or not keyword:
-        return jsonify({"error": "location and keyword parameters are required"}), 400
+        return jsonify({"error": "location and keyword parameters are required", "message": "위치와 키워드를 모두 입력해 주세요."}), 400
 
     results = search_restaurants(location, keyword)
     return jsonify(results)

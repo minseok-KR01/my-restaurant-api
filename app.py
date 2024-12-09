@@ -15,6 +15,11 @@ CORS(app, resources={r"/recommend/*": {"origins": "*"}})
 def test():
     return jsonify({"message": "CORS is enabled and the API is running!"})
 
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({"message": "Welcome to the My Restaurant API!"})
+
+
 # Google Maps API 키 설정 (환경 변수에서 가져오기)
 API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
 if not API_KEY:

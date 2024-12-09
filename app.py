@@ -7,15 +7,13 @@ import logging
 
 app = Flask(__name__)
 
-# CORS 설정
-CORS(app)
+# CORS 설정: 모든 출처(origin)를 허용
+CORS(app, resources={r"/recommend/*": {"origins": "*"}})
 
-# 로깅 설정 (DEBUG 레벨로 설정)
-logging.basicConfig(level=logging.DEBUG)
-
+# 테스트 라우트
 @app.route('/test', methods=['GET'])
 def test():
-    return jsonify({"message": "CORS is enabled!"})
+    return jsonify({"message": "CORS is enabled and the API is running!"})
 
 # Google Maps API 키 설정 (환경 변수에서 가져오기)
 API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
@@ -24,6 +22,10 @@ if not API_KEY:
 
 gmaps = googlemaps.Client(key=API_KEY)
 
+# 로깅 설정
+logging.basicConfig(level=logging.INFO)
+
+# 식당 검색 함수
 def search_restaurants(location, keyword, radius=1000, max_results=5):
     try:
         # 위치 문자열을 좌표로 변환
@@ -38,7 +40,7 @@ def search_restaurants(location, keyword, radius=1000, max_results=5):
         radius = min(radius, 5000)
 
         # Google Places API를 사용해 장소 검색
-        logging.debug(f"Searching for '{keyword}' near '{location}' with radius {radius} meters")
+        logging.info(f"Searching for '{keyword}' near '{location}' with radius {radius} meters")
         places_result = gmaps.places(query=keyword, location=lat_lng, radius=radius)
 
         restaurants = []
@@ -82,13 +84,13 @@ def search_restaurants(location, keyword, radius=1000, max_results=5):
 
     except googlemaps.exceptions.ApiError as e:
         logging.error(f"Google Maps API error: {e}")
-        return {"error": f"Google Maps API error: {e}", "message": "Google Maps API 호출 중 오류가 발생했습니다. API 키를 확인해 주세요."}
+        return {"error": f"Google Maps API error: {e}"}
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
-        return {"error": str(e), "message": "알 수 없는 오류가 발생했습니다. 다시 시도해 주세요."}
+        return {"error": str(e)}
 
+# 리뷰에서 장점과 단점을 추출하는 함수
 def extract_pros_cons(reviews):
-    """리뷰에서 장점과 단점을 추출하는 함수"""
     pros = []
     cons = []
 
@@ -106,8 +108,8 @@ def extract_pros_cons(reviews):
 
     return pros, cons
 
+# 리뷰에서 주요 특성을 추출하는 함수
 def extract_features(reviews):
-    """리뷰에서 주요 특성을 추출하는 함수"""
     features = []
     feature_keywords = ['noodle', 'soup', 'pancake', 'dumpling', 'broth', 'service', 'taste']
 
@@ -120,16 +122,17 @@ def extract_features(reviews):
 
     return features
 
+# 추천 라우트
 @app.route('/recommend', methods=['GET'])
 def recommend():
     location = request.args.get('location')
     keyword = request.args.get('keyword')
 
     if not location or not keyword:
-        return jsonify({"error": "location and keyword parameters are required", "message": "위치와 키워드를 모두 입력해 주세요."}), 400
+        return jsonify({"error": "location and keyword parameters are required"}), 400
 
     results = search_restaurants(location, keyword)
     return jsonify(results)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
